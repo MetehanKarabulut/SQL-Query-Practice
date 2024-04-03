@@ -1,0 +1,165 @@
+CREATE TABLE calisanlar(
+calisan_id int PRIMARY KEY,
+ad char(25),
+soyad char(25),
+maas int,
+katılmaTarihi datetime,
+calisan_birim_ad int NOT NULL
+);
+
+CREATE TABLE ikramiye(
+ikramiye_calisan_id int PRIMARY KEY,
+ikramiye_ucret int,
+ikramiye_tarih datetime NOT NULL
+);
+
+CREATE TABLE unvan(
+unvan_calisan_id int PRIMARY KEY,
+unvan_calisan char(25),
+unvan_tarih datetime
+);
+
+CREATE TABLE birimler(
+birim_id int PRIMARY KEY,
+birim_ad char(25)
+);
+
+------------------------------------------
+
+ALTER TABLE calisanlar
+ADD CONSTRAINT FK_ikramiye_calisanlar
+FOREIGN KEY (calisan_id)
+REFERENCES ikramiye(ikramiye_calisan_id);
+
+ALTER TABLE calisanlar
+ADD CONSTRAINT FK_unvan_calisanlar
+FOREIGN KEY (calisan_id)
+REFERENCES unvan(unvan_calisan_id);
+
+ALTER TABLE calisanlar
+ADD CONSTRAINT FK_birimler_calisanlar
+FOREIGN KEY (calisan_id)
+REFERENCES birimler(birim_id);
+
+-------------------------------------------
+
+INSERT INTO calisanlar (calisan_id, ad, soyad, maas, katılmaTarihi, calisan_birim_id) VALUES (1, 'İsmail', 'İşeri', 100000, '2014-02-20 00:00:00.000', 1);
+INSERT INTO calisanlar (calisan_id, ad, soyad, maas, katılmaTarihi, calisan_birim_id) VALUES (2, 'Hami', 'Satılmış', 80000, '2014-06-11 00:00:00.000', 1);
+INSERT INTO calisanlar (calisan_id, ad, soyad, maas, katılmaTarihi, calisan_birim_id) VALUES (3, 'Durmuş', 'Şahin', 300000, '2014-02-20 00:00:00.000', 2);
+INSERT INTO calisanlar (calisan_id, ad, soyad, maas, katılmaTarihi, calisan_birim_id) VALUES (4, 'Kağan', 'Yazar', 500000, '2014-02-20 00:00:00.000', 3);
+INSERT INTO calisanlar (calisan_id, ad, soyad, maas, katılmaTarihi, calisan_birim_id) VALUES (5, 'Meryem', 'Soysaldı', 500000, '2014-06-11 00:00:00.000', 3);
+INSERT INTO calisanlar (calisan_id, ad, soyad, maas, katılmaTarihi, calisan_birim_id) VALUES (6, 'Duygu', 'Akşehir', 200000, '2014-06-11 00:00:00.000', 2);
+INSERT INTO calisanlar (calisan_id, ad, soyad, maas, katılmaTarihi, calisan_birim_id) VALUES (7, 'Kübra', 'Seyhan', 75000, '2014-01-20 00:00:00.000', 1);
+INSERT INTO calisanlar (calisan_id, ad, soyad, maas, katılmaTarihi, calisan_birim_id) VALUES (8, 'Gülcan', 'yıldız', 90000, '2014-06-11 00:00:00.000', 3);
+
+-------------------------------------------
+
+INSERT INTO ikramiye (ikramiye_calisan_id, ikramiye_ucret, ikramiye_tarih) VALUES (1, 5000, '2016-02-20 00:00:00.000');
+INSERT INTO ikramiye (ikramiye_calisan_id, ikramiye_ucret, ikramiye_tarih) VALUES (2, 3000, '2016-06-11 00:00:00.000');
+INSERT INTO ikramiye (ikramiye_calisan_id, ikramiye_ucret, ikramiye_tarih) VALUES (3, 4000, '2016-02-20 00:00:00.000');
+INSERT INTO ikramiye (ikramiye_calisan_id, ikramiye_ucret, ikramiye_tarih) VALUES (1, 4500, '2016-02-20 00:00:00.000');
+INSERT INTO ikramiye (ikramiye_calisan_id, ikramiye_ucret, ikramiye_tarih) VALUES (2, 3500, '2016-06-11 00:00:00.000');
+
+-------------------------------------------
+
+INSERT INTO unvan (unvan_calisan_id, unvan_calisan, unvan_tarih) VALUES (1, 'Yönetici', '2016-02-20 00:00:00.000');
+INSERT INTO unvan (unvan_calisan_id, unvan_calisan, unvan_tarih) VALUES (2, 'Personel', '2016-06-11 00:00:00.000');
+INSERT INTO unvan (unvan_calisan_id, unvan_calisan, unvan_tarih) VALUES (8, 'Personel', '2016-06-11 00:00:00.000');
+INSERT INTO unvan (unvan_calisan_id, unvan_calisan, unvan_tarih) VALUES (5, 'Müdür', '2016-06-11 00:00:00.000');
+INSERT INTO unvan (unvan_calisan_id, unvan_calisan, unvan_tarih) VALUES (4, 'Yönetici Yardımcısı', '2016-06-11 00:00:00.000');
+INSERT INTO unvan (unvan_calisan_id, unvan_calisan, unvan_tarih) VALUES (7, 'Personel', '2016-06-11 00:00:00.000');
+INSERT INTO unvan (unvan_calisan_id, unvan_calisan, unvan_tarih) VALUES (6, 'Takım Lideri', '2016-06-11 00:00:00.000');
+INSERT INTO unvan (unvan_calisan_id, unvan_calisan, unvan_tarih) VALUES (3, 'Takım Lideri', '2016-06-11 00:00:00.000');
+
+---------------------------------------------
+SELECT 
+  calisanlar.ad,
+  calisanlar.soyad,
+  calisanlar.maas
+FROM calisanlar
+INNER JOIN birimler ON calisanlar.calisan_birim_id = birimler.birim_id
+WHERE calisan_birim_id IN ('Yazılım', 'Donanım')
+
+----------------------------------------------
+
+SELECT 
+  calisanlar.ad,
+  calisanlar.soyad,
+  calisanlar.maas
+FROM calisanlar
+ORDER BY calisanlar.maas DESC 
+
+----------------------------------------------
+
+SELECT 
+  birimler.birim_ad,
+  COUNT(*) AS CalisanSayisi
+FROM Calisanlar
+INNER JOIN birimler ON calisanlar.calisan_birim_id = birimler.birim_id
+GROUP BY birimler.birim_ad;
+
+----------------------------------------------
+
+SELECT 
+  unvan_calisan,
+  COUNT(*) AS CalisanSayisi
+FROM unvan
+GROUP BY unvan_calisan
+HAVING COUNT(*) > 1
+ORDER BY CalisanSayisi DESC;
+
+----------------------------------------------
+
+SELECT 
+  calisanlar.ad,
+  calisanlar.soyad,
+  calisanlar.maas
+FROM calisanlar
+WHERE maas BETWEEN 50000 AND 100000
+ORDER BY maas ASC;
+
+-----------------------------------------------
+
+SELECT 
+  calisanlar.ad,
+  calisanlar.soyad,
+  birimler.birim_ad,
+  unvan.unvan_calisan,
+  CASE 
+    WHEN ikramiye.ikramiye_ucret > 0 THEN ikramiye.ikramiye_ucret
+    ELSE 'Yok'
+  END AS ikramiye_ucret
+FROM calisanlar
+INNER JOIN birimler ON calisanlar.calisan_birim_id = birimler.birim_id
+INNER JOIN unvan ON calisanlar.calisan_id = unvan.unvan_calisan_id
+INNER JOIN ikramiye ON calisanlar.calisan_id = ikramiye.ikramiye_calisan_id
+WHERE ikramiye.ikramiye_ucret > 0
+
+------------------------------------------------
+
+SELECT 
+  ad,
+  soyad,
+  unvan_calisan
+FROM Calisanlar
+INNER JOIN unvan ON calisanlar.calisan_id = unvan.unvan_calisan_id
+WHERE unvan_calisan IN ('Yönetici', 'Müdür')
+
+------------------------------------------------
+
+SELECT 
+  birim_ad,
+  ad,
+  soyad,
+  maas
+FROM calisanlar
+INNER JOIN birimler ON calisanlar.calisan_birim_id = birimler.birim_id
+GROUP BY birim_id, birim_ad, calisan_birim_id, maas, ad, soyad
+HAVING maas = (
+  SELECT MAX(maas)
+  FROM calisanlar AS c
+  WHERE c.calisan_birim_id = calisanlar.calisan_birim_id
+)
+ORDER BY birim_ad ASC, maas DESC;
+
+
